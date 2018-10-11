@@ -244,7 +244,7 @@
   #define STEPPER_DISABLE_PIN(i) _PIN(STEPPER_DISABLE_PORT_##i)
 
   // Define homing/hard limit switch input pins and limit interrupt vectors.
-  #define MIN_LIMIT_PORT_0 E
+  /*#define MIN_LIMIT_PORT_0 E
   #define MIN_LIMIT_PORT_1 J
   #define MIN_LIMIT_PORT_2 D
   #if N_AXIS > 3
@@ -304,12 +304,26 @@
   #define MAX_LIMIT_PORT(i) _PORT(MAX_LIMIT_PORT_##i)
   #define MAX_LIMIT_PIN(i) _PIN(MAX_LIMIT_PORT_##i)
 
-  //  #define LIMIT_INT       PCIE0  // Pin change interrupt enable pin
-  //  #define LIMIT_INT_vect  PCINT0_vect
-  //  #define LIMIT_PCMSK     PCMSK0 // Pin change interrupt register
-  //  #define LIMIT_MASK ((1<<X_LIMIT_BIT)|(1<<Y_LIMIT_BIT)|(1<<Z_LIMIT_BIT)) // All limit bits
-  #define DISABLE_HW_LIMITS
-
+ // #define LIMIT_INT       PCIE0  // Pin change interrupt enable pin
+ // #define LIMIT_INT_vect  PCINT0_vect
+ // #define LIMIT_PCMSK     PCMSK0 // Pin change interrupt register
+ // #define LIMIT_MASK ((1<<MIN_LIMIT_BIT_0)|(1<<MAX_LIMIT_BIT_0)|(1<<MIN_LIMIT_BIT_1)|(1<<MAX_LIMIT_BIT_1)|(1<<MIN_LIMIT_BIT_2)|(1<<MAX_LIMIT_BIT_2)|(1<<MIN_LIMIT_BIT_3)|(1<<MAX_LIMIT_BIT_3)|(1<<MIN_LIMIT_BIT_4)|(1<<MAX_LIMIT_BIT_4)) // All limit bits
+ // #define DISABLE_HW_LIMITS
+ */
+  //Mod by Ka Ho
+  #define LIMIT_DDR       DDRB
+  #define LIMIT_PORT      PORTB
+  #define LIMIT_PIN       PINB
+  #define X_LIMIT_BIT     0 // MEGA2560 Digital Pin 53
+  #define Y_LIMIT_BIT     1 // MEGA2560 Digital Pin 52
+  #define Z_LIMIT_BIT     2 // MEGA2560 Digital Pin 51
+  #define A_LIMIT_BIT     3 // MEGA2560 Digital Pin 50
+  #define B_LIMIT_BIT     6 // MEGA2560 Digital Pin 12
+  #define LIMIT_INT       PCIE0  // Pin change interrupt enable pin
+  #define LIMIT_INT_vect  PCINT0_vect
+  #define LIMIT_PCMSK     PCMSK0 // Pin change interrupt register
+  #define LIMIT_MASK ((1<<X_LIMIT_BIT)|(1<<Y_LIMIT_BIT)|(1<<Z_LIMIT_BIT)|(1<<A_LIMIT_BIT)|(1<<B_LIMIT_BIT)) // All limit bits
+//Mod by Ka Ho 
   // Define spindle enable and spindle direction output pins.
   #define SPINDLE_ENABLE_DDR      DDRG
   #define SPINDLE_ENABLE_PORT     PORTG

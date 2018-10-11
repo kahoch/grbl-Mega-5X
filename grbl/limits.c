@@ -33,7 +33,7 @@
 
 void limits_init()
 {
-  #ifdef DEFAULTS_RAMPS_BOARD
+  #ifndef DEFAULTS_RAMPS_BOARD
     // Set as input pins
     MIN_LIMIT_DDR(0) &= ~(1<<MIN_LIMIT_BIT(0));
     MIN_LIMIT_DDR(1) &= ~(1<<MIN_LIMIT_BIT(1));
@@ -162,7 +162,7 @@ void limits_disable()
     PCICR &= ~(1 << LIMIT_INT);  // Disable Pin Change Interrupt
   #endif // DEFAULTS_RAMPS_BOARD
 }
-#ifdef DEFAULTS_RAMPS_BOARD
+#ifndef DEFAULTS_RAMPS_BOARD
   #if N_AXIS == 4
     static volatile uint8_t * const max_limit_pins[N_AXIS] = {&MAX_LIMIT_PIN(0), &MAX_LIMIT_PIN(1), &MAX_LIMIT_PIN(2), &MAX_LIMIT_PIN(3)};
     static volatile uint8_t * const min_limit_pins[N_AXIS] = {&MIN_LIMIT_PIN(0), &MIN_LIMIT_PIN(1), &MIN_LIMIT_PIN(2), &MIN_LIMIT_PIN(3)};
@@ -192,7 +192,7 @@ void limits_disable()
 uint8_t limits_get_state()
 {
   uint8_t limit_state = 0;
-  #ifdef DEFAULTS_RAMPS_BOARD
+  #ifndef DEFAULTS_RAMPS_BOARD
     uint8_t pin;
     uint8_t idx;
     #ifdef INVERT_LIMIT_PIN_MASK
@@ -233,10 +233,10 @@ uint8_t limits_get_state()
   #endif //DEFAULTS_RAMPS_BOARD
 }
 
-#ifdef DEFAULTS_RAMPS_BOARD
-  #ifndef DISABLE_HW_LIMITS
-    #error "HW limits are not implemented"
-  #endif
+#ifndef DEFAULTS_RAMPS_BOARD
+ // #ifndef DISABLE_HW_LIMITS
+ //   #error "HW limits are not implemented"
+ // #endif
 #else
 // This is the Limit Pin Change Interrupt, which handles the hard limit feature. A bouncing
 // limit switch can cause a lot of problems, like false readings and multiple interrupt calls.
@@ -325,7 +325,7 @@ void limits_go_home(uint8_t cycle_mask)
   memset(pl_data,0,sizeof(plan_line_data_t));
   pl_data->condition = (PL_COND_FLAG_SYSTEM_MOTION|PL_COND_FLAG_NO_FEED_OVERRIDE);
   pl_data->line_number = HOMING_CYCLE_LINE_NUMBER;
-
+  
   // Initialize variables used for homing computations.
   uint8_t n_cycle = (2*N_HOMING_LOCATE_CYCLE+1);
   uint8_t step_pin[N_AXIS];
@@ -354,7 +354,6 @@ void limits_go_home(uint8_t cycle_mask)
     do {
 
       system_convert_array_steps_to_mpos(target,sys_position);
-
       // Initialize and declare variables needed for homing routine.
       n_active_axis = 0;
       for (idx=0; idx<N_AXIS; idx++) {
@@ -401,10 +400,13 @@ void limits_go_home(uint8_t cycle_mask)
       sys.step_control = STEP_CONTROL_EXECUTE_SYS_MOTION; // Set to execute homing motion and clear existing flags.
       st_prep_buffer(); // Prep and fill segment buffer from newly planned block.
       st_wake_up(); // Initiate motion
+	 // printPgmString(PSTR("after motion \r\n"));
+	 // delay_ms(50);
       do {
         if (approach) {
           // Check limit state. Lock out cycle axes when they change.
           limit_state = limits_get_state();
+		  
           for (idx=0; idx<N_AXIS; idx++) {
             if (axislock[idx] & step_pin[idx]) {
               if (limit_state & (1 << idx)) {
